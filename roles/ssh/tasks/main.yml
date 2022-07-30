@@ -1,0 +1,140 @@
+- name: Set SSH LogLevel
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?LogLevel"
+    line: "LogLevel {{ ssh_log_level | upper }}"
+  become: true
+
+- name: Ensure PasswordAuthentication is disabled
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?PasswordAuthentication"
+    line: "PasswordAuthentication no"
+  become: true
+  when: "ssh_disable_password_authentication == true"
+
+- name: Ensure SSH PAM is enabled
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?UsePAM"
+    line: "UsePAM yes"
+  become: true
+
+- name: Ensure SSH root login is disabled
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?PermitRootLogin"
+    line: "PermitRootLogin no"
+  become: true
+
+- name: Ensure SSH HostbasedAuthentication is disabled
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?HostbasedAuthentication"
+    line: "HostbasedAuthentication no"
+  become: true
+
+- name: Ensure SSH PermitEmptyPasswords is disabled
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?PermitEmptyPasswords"
+    line: "PermitEmptyPasswords no"
+  become: true
+
+- name: Ensure SSH PermitUserEnvironment is disabled
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?PermitUserEnvironment"
+    line: "PermitUserEnvironment no"
+  become: true
+
+- name: Ensure SSH IgnoreRhosts is enabled
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?IgnoreRhosts"
+    line: "IgnoreRhosts yes"
+  become: true
+
+- name: Ensure SSH X11 forwarding is disabled
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?X11Forwarding"
+    line: "X11Forwarding no"
+  become: true
+
+- name: Ensure SSH AllowTcpForwarding is disabled
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?AllowTcpForwarding"
+    line: "AllowTcpForwarding no"
+  become: true
+  when: "ssh_disable_tcp_forwarding == true"
+
+- name: Ensure SSH warning banner is configured
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?Banner"
+    line: "Banner {{ ssh_warning_banner }}"
+  become: true
+  when: "ssh_warning_banner != ''"
+
+- name: Ensure SSH PrintMotd is enabled
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?PrintMotd"
+    line: "PrintMotd yes"
+  become: true
+  when: "ssh_motd == true"
+
+- name: Ensure SSH MaxAuthTries is set to 4 or less
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?MaxAuthTries"
+    line: "MaxAuthTries {{ ssh_max_auth_tries | default(4) }}"
+  become: true
+
+- name: Ensure SSH MaxStartups is configured
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?MaxStartups"
+    line: "MaxStartups {{ ssh_max_startups | default('10:30:100') }}"
+  become: true
+
+- name: Ensure SSH MaxSessions is set to 10 or less
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?MaxSessions"
+    line: "MaxSessions 10"
+  become: true
+
+- name: Ensure SSH LoginGraceTime is set to one minute or less
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regex: "^(# *)?LoginGraceTime"
+    line: "LoginGraceTime 60"
+  become: true
+
+- name: Ensure SSH Idle Timeout Interval is configured
+  block:
+    - name: Configure ClientAliveInterval
+      lineinfile:
+        path: "{{ sshd_config_file }}"
+        regex: "^(# *)?ClientAliveInterval"
+        line: "ClientAliveInterval {{ ssh_idle_timeout__client_alive_interval }}"
+      become: true
+
+    - name: Configure ClientAliveCountMax
+      lineinfile:
+        path: "{{ sshd_config_file }}"
+        regex: "^(# *)?ClientAliveCountMax"
+        line: "ClientAliveCountMax {{ ssh_idle_timeout__client_alive_max_count }}"
+      become: true
+  when: "ssh_idle_timeout_interval == true"
+
+
+- name: Resart SSHD and enable on boot
+  service:
+    name: sshd
+    enabled: true
+    state: restarted
+  become: true

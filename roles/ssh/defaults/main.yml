@@ -1,0 +1,12 @@
+sshd_config_file: /etc/ssh/sshd_config
+
+ssh_log_level: info
+ssh_disable_password_authentication: true
+ssh_disable_tcp_forwarding: false
+
+ssh_warning_banner: /etc/issue.net
+ssh_motd: false
+
+ssh_idle_timeout_interval: false
+ssh_idle_timeout__client_alive_interval: 0
+ssh_idle_timeout__client_alive_max_count: 3

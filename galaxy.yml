@@ -1,0 +1,30 @@
+namespace: vandycknick
+name: security
+version: "0.1.0"
+readme: README.md
+
+authors:
+  - geerlingguy
+
+description: Collection of roles to harden a server or workstation
+
+# Either a single license or a list of licenses for content inside of a collection. Ansible Galaxy currently only
+# accepts L(SPDX,https://spdx.org/licenses/) licenses. This key is mutually exclusive with 'license_file'
+license:
+  - MIT
+
+# A list of tags you want to associate with the collection for indexing/searching. A tag name has the same character
+# requirements as 'namespace' and 'name'
+tags:
+  - hardening
+  - security
+  - ssh
+dependencies:
+  community.general: ">=3.0.0"
+
+repository: https://github.com/vandycknick/ansible-collection-security
+documentation: https://github.com/vandycknick/ansible-collection-security
+homepage: https://nvd.codes
+issues: https://github.com/vandycknick/ansible-collection-security/issues
+
+build_ignore: []
